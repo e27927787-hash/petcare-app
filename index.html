@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧把關 安心養寵 — PetCare App Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #f0f2f5; font-family: 'Noto Sans TC', sans-serif; }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 24px 16px 40px;
+    background: linear-gradient(135deg, #e8f0f8 0%, #e8f5ee 100%);
+  }
+
+  .site-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .site-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #185FA5;
+    letter-spacing: 0.02em;
+  }
+  .site-header p {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+  }
+  .badge-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .badge.blue { background: #E6F1FB; color: #185FA5; }
+  .badge.green { background: #EAF3DE; color: #3B6D11; }
+  .badge.pink { background: #FBEAF0; color: #993556; }
+  .badge.purple { background: #EEEDFE; color: #534AB7; }
+
+  /* Phone shell */
+  .phone-wrap {
+    width: 100%;
+    max-width: 375px;
+    margin: 0 auto;
+  }
+  .phone {
+    background: #fff;
+    border-radius: 44px;
+    border: 3px solid #c8c8cc;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .phone-notch {
+    background: #111;
+    height: 28px;
+    border-radius: 0 0 18px 18px;
+    width: 120px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+  .statusbar {
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 20px 4px;
+    font-size: 11px;
+    color: #555;
+    font-weight: 500;
+  }
+  .screen {
+    background: #f0f2f5;
+    min-height: 620px;
+    overflow: hidden;
+    position: relative;
+  }
+  .page {
+    display: none;
+    flex-direction: column;
+    min-height: 620px;
+    animation: fadein 0.2s ease;
+  }
+  .page.active { display: flex; }
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Top bar */
+  .topbar {
+    background: #fff;
+    padding: 12px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 0.5px solid #e8e8e8;
+    flex-shrink: 0;
+  }
+  .topbar h2 { font-size: 16px; font-weight: 500; color: #1a1a1a; flex: 1; }
+  .back-btn {
+    font-size: 22px;
+    cursor: pointer;
+    color: #185FA5;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Scroll area */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* Cards */
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    border: 0.5px solid #e8e8e8;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #888;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .card-title i { font-size: 15px; }
+
+  /* Home header */
+  .home-header {
+    background: linear-gradient(135deg, #185FA5 0%, #1D9E75 100%);
+    padding: 20px 16px 16px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .home-header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .home-header h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+  .home-header p { font-size: 12px; opacity: 0.85; }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff;
+  }
+  .pet-chip {
+    display: flex; align-items: center; gap: 8px; margin-top: 12px;
+    background: rgba(255,255,255,0.2); border-radius: 20px;
+    padding: 6px 12px; width: fit-content;
+  }
+  .pet-chip span { font-size: 13px; font-weight: 500; }
+
+  /* Pills */
+  .pill {
+    display: inline-block; padding: 3px 8px;
+    border-radius: 12px; font-size: 11px; font-weight: 500;
+  }
+  .pill.green  { background: #EAF3DE; color: #3B6D11; }
+  .pill.amber  { background: #FAEEDA; color: #854F0B; }
+  .pill.red    { background: #FCEBEB; color: #A32D2D; }
+  .pill.blue   { background: #E6F1FB; color: #185FA5; }
+  .pill.purple { background: #EEEDFE; color: #534AB7; }
+
+  /* Stats */
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .stat-card { background: #f8f9fa; border-radius: 10px; padding: 10px 12px; }
+  .stat-card .lbl { font-size: 11px; color: #888; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
+  .stat-card .val { font-size: 20px; font-weight: 500; color: #1a1a1a; }
+  .stat-card .unit { font-size: 11px; color: #888; }
+
+  /* Score ring */
+  .score-ring { display: flex; justify-content: center; padding: 8px 0; }
+  .ring-wrap { position: relative; width: 100px; height: 100px; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-label {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); text-align: center;
+  }
+  .ring-label .num { font-size: 26px; font-weight: 700; color: #185FA5; }
+  .ring-label .sub { font-size: 10px; color: #888; }
+
+  /* Alerts */
+  .alert-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 0.5px solid #f5f5f5;
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .alert-dot.red    { background: #E24B4A; }
+  .alert-dot.amber  { background: #EF9F27; }
+  .alert-dot.green  { background: #639922; }
+  .alert-text  { flex: 1; font-size: 13px; color: #1a1a1a; line-height: 1.4; }
+  .alert-time  { font-size: 11px; color: #888; white-space: nowrap; }
+
+  /* Menu grid */
+  .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+  .menu-item {
+    background: #fff; border-radius: 14px; border: 0.5px solid #e8e8e8;
+    padding: 14px 10px; display: flex; flex-direction: column;
+    align-items: center; gap: 8px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .menu-item:hover  { background: #f0f5ff; border-color: #B5D4F4; transform: translateY(-1px); }
+  .menu-item:active { transform: scale(0.97); }
+  .menu-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .menu-label { font-size: 12px; font-weight: 500; text-align: center; color: #1a1a1a; }
+  .menu-sub   { font-size: 10px; color: #888; text-align: center; }
+
+  /* Notification banner */
+  .notify-banner {
+    background: #FAEEDA; border-radius: 10px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px; border: 0.5px solid #FAC775;
+  }
+  .notify-banner i { font-size: 18px; color: #854F0B; flex-shrink: 0; }
+  .notify-text { font-size: 12px; color: #633806; flex: 1; line-height: 1.4; }
+
+  /* Timeline */
+  .timeline-item {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-bottom: 0.5px solid #f5f5f5; align-items: flex-start;
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .tl-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 13px;
+  }
+  .tl-content { flex: 1; }
+  .tl-title { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+  .tl-sub   { font-size: 11px; color: #888; margin-top: 1px; }
+  .tl-date  { font-size: 11px; color: #888; white-space: nowrap; }
+
+  /* Meds */
+  .med-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 0.5px solid #f5f5f5;
+  }
+  .med-item:last-child { border-bottom: none; }
+  .med-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .med-name   { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+  .med-detail { font-size: 11px; color: #888; margin-top: 1px; }
+  .check-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid #ccc;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; flex-shrink: 0;
+    transition: all 0.2s; color: #ccc;
+  }
+  .check-btn.done { background: #1D9E75; border-color: #1D9E75; color: #fff; }
+
+  /* GPS map */
+  .gps-map {
+    background: #d4e8d4; border-radius: 10px; height: 140px;
+    position: relative; overflow: hidden; margin-bottom: 10px;
+  }
+  .gps-map svg.bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .gps-marker {
+    position: absolute; top: 45%; left: 52%;
+    transform: translate(-50%,-50%); text-align: center;
+  }
+  .gps-pulse {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #185FA5; margin: 0 auto 4px; position: relative;
+  }
+  .gps-pulse::after {
+    content: ''; position: absolute;
+    top: -5px; left: -5px; width: 24px; height: 24px;
+    border-radius: 50%; border: 2px solid #185FA5;
+    animation: gps-pulse 2s infinite; opacity: 0.5;
+  }
+  @keyframes gps-pulse {
+    0%   { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .gps-label {
+    font-size: 11px; font-weight: 500; color: #185FA5;
+    background: #fff; border-radius: 8px; padding: 2px 6px;
+    border: 0.5px solid #B5D4F4;
+  }
+  .fence-ring {
+    position: absolute; top: 22%; left: 30%;
+    width: 96px; height: 76px;
+    border: 2px dashed #185FA5; border-radius: 50%; opacity: 0.4;
+  }
+
+  /* Beauty */
+  .beauty-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 0.5px solid #f5f5f5;
+  }
+  .beauty-item:last-child { border-bottom: none; }
+  .beauty-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .beauty-name { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+  .beauty-due  { font-size: 11px; color: #888; margin-top: 1px; }
+  .progress-bar {
+    height: 4px; border-radius: 2px; background: #f0f0f0;
+    overflow: hidden; margin-top: 5px; width: 100%;
+  }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+
+  /* Community */
+  .community-post {
+    background: #fff; border-radius: 12px; border: 0.5px solid #e8e8e8;
+    padding: 12px; margin-bottom: 10px;
+  }
+  .post-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .post-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .post-user { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+  .post-area { font-size: 11px; color: #888; }
+  .post-text { font-size: 13px; color: #1a1a1a; line-height: 1.55; margin-bottom: 10px; }
+  .post-actions { display: flex; gap: 16px; }
+  .post-action {
+    font-size: 12px; color: #888;
+    display: flex; align-items: center; gap: 4px; cursor: pointer;
+    transition: color 0.15s;
+  }
+  .post-action:hover { color: #185FA5; }
+
+  /* Lost alert */
+  .lost-alert {
+    background: #FCEBEB; border-radius: 12px;
+    border: 0.5px solid #F7C1C1; padding: 12px; margin-bottom: 10px;
+  }
+  .lost-title {
+    font-size: 13px; font-weight: 700; color: #A32D2D;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .lost-body { font-size: 12px; color: #791F1F; margin-top: 5px; line-height: 1.5; }
+
+  /* Buttons */
+  .btn-primary {
+    background: #185FA5; color: #fff; border: none;
+    border-radius: 10px; padding: 10px 16px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    width: 100%; margin-top: 8px; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover  { background: #1450890; }
+  .btn-primary:active { background: #0c447c; transform: scale(0.99); }
+  .btn-outline {
+    background: transparent; color: #185FA5;
+    border: 1px solid #185FA5; border-radius: 10px;
+    padding: 8px 14px; font-size: 12px; font-weight: 500;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .btn-outline:hover { background: #E6F1FB; }
+
+  /* Section header */
+  .section-header {
+    font-size: 12px; font-weight: 500; color: #888;
+    margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    background: #fff; display: flex; border-top: 0.5px solid #e8e8e8;
+    padding: 6px 0 10px; flex-shrink: 0;
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 2px; cursor: pointer;
+    padding: 4px; border: none; background: transparent;
+    font-family: inherit;
+  }
+  .tab-btn i    { font-size: 22px; color: #bbb; }
+  .tab-btn span { font-size: 10px; color: #bbb; }
+  .tab-btn.active i, .tab-btn.active span { color: #185FA5; }
+
+  /* Chart bars */
+  .chart-bars {
+    display: flex; gap: 4px; align-items: flex-end;
+    height: 64px; padding: 4px 0;
+  }
+  .chart-bar {
+    flex: 1; border-radius: 4px 4px 0 0;
+    background: #185FA5;
+  }
+  .chart-labels {
+    display: flex; gap: 4px; justify-content: space-between; margin-top: 4px;
+  }
+  .chart-label {
+    flex: 1; font-size: 10px; color: #888; text-align: center;
+  }
+
+  /* AI advice items */
+  .ai-advice-item {
+    display: block; margin: 5px 0; padding: 8px 10px;
+    background: #f8f9fa; border-radius: 8px; font-size: 12px;
+    color: #1a1a1a; line-height: 1.5;
+  }
+  .ai-advice-item.highlight { background: #EAF3DE; }
+
+  /* Camera mockup */
+  .camera-view {
+    background: #1a1a2e; border-radius: 10px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px; margin-bottom: 10px;
+  }
+  .camera-view i { font-size: 32px; color: rgba(255,255,255,0.5); }
+  .camera-view .cam-label { font-size: 12px; color: rgba(255,255,255,0.5); }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <h1>🐾 PetCare — 智慧把關 安心養寵</h1>
+  <p>寵物健康管理 App 互動展示原型</p>
+  <div class="badge-row">
+    <span class="badge blue"><i class="ti ti-heart-rate" style="font-size:11px"></i> 健康監測</span>
+    <span class="badge pink"><i class="ti ti-scissors" style="font-size:11px"></i> 美容管理</span>
+    <span class="badge green"><i class="ti ti-map-pin" style="font-size:11px"></i> 防走失定位</span>
+    <span class="badge purple"><i class="ti ti-users" style="font-size:11px"></i> 飼主社群</span>
+  </div>
+</div>
+
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="statusbar">
+      <span>9:41</span>
+      <span style="font-weight:700">PetCare</span>
+      <span><i class="ti ti-wifi" style="font-size:12px"></i> <i class="ti ti-battery" style="font-size:12px"></i></span>
+    </div>
+
+    <div class="screen">
+
+      <!-- ========== HOME ========== -->
+      <div class="page active" id="page-home">
+        <div class="home-header">
+          <div class="home-header-top">
+            <div>
+              <h1>安安，早安 👋</h1>
+              <p>今日寵物狀況一切正常</p>
+            </div>
+            <div class="avatar">A</div>
+          </div>
+          <div class="pet-chip">
+            <span style="font-size:18px">🐕</span>
+            <span>柴柴 · 3歲 · 公</span>
+            <span class="pill green" style="margin-left:4px;background:rgba(255,255,255,0.25);color:#fff">健康</span>
+          </div>
+        </div>
+        <div class="scroll-area">
+          <div style="height:8px"></div>
+          <div class="notify-banner">
+            <i class="ti ti-scissors"></i>
+            <div class="notify-text">距上次洗澡已 <strong>38 天</strong>，建議近期安排美容預約</div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-heart-rate"></i> 今日健康評分</div>
+            <div class="score-ring">
+              <div class="ring-wrap">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f0f0f0" stroke-width="8"/>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#185FA5" stroke-width="8"
+                    stroke-dasharray="263.9" stroke-dashoffset="42" stroke-linecap="round"/>
+                </svg>
+                <div class="ring-label">
+                  <div class="num">84</div>
+                  <div class="sub">良好</div>
+                </div>
+              </div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-card">
+                <div class="lbl"><i class="ti ti-run" style="font-size:12px"></i> 今日步數</div>
+                <div class="val">6,240<span class="unit"> 步</span></div>
+              </div>
+              <div class="stat-card">
+                <div class="lbl"><i class="ti ti-heart" style="font-size:12px"></i> 心跳均值</div>
+                <div class="val">82<span class="unit"> bpm</span></div>
+              </div>
+              <div class="stat-card">
+                <div class="lbl"><i class="ti ti-moon" style="font-size:12px"></i> 睡眠時長</div>
+                <div class="val">9.2<span class="unit"> hr</span></div>
+              </div>
+              <div class="stat-card">
+                <div class="lbl"><i class="ti ti-temperature" style="font-size:12px"></i> 體溫</div>
+                <div class="val">38.4<span class="unit"> °C</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-bell"></i> 待辦提醒</div>
+            <div class="alert-item">
+              <div class="alert-dot amber"></div>
+              <div class="alert-text">關節保健錠 — 今日未服用</div>
+              <div class="alert-time">下午 6:00</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot green"></div>
+              <div class="alert-text">心絲蟲預防藥 — 本月已完成</div>
+              <div class="alert-time">✓</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot amber"></div>
+              <div class="alert-text">回診提醒 — 6/15 心臟追蹤</div>
+              <div class="alert-time">13天後</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="goto('home')"><i class="ti ti-home"></i><span>首頁</span></button>
+          <button class="tab-btn" onclick="goto('menu')"><i class="ti ti-apps"></i><span>功能</span></button>
+          <button class="tab-btn" onclick="goto('gps')"><i class="ti ti-map-pin"></i><span>定位</span></button>
+          <button class="tab-btn" onclick="goto('community')"><i class="ti ti-users"></i><span>社群</span></button>
+        </div>
+      </div>
+
+      <!-- ========== MENU ========== -->
+      <div class="page" id="page-menu">
+        <div class="topbar">
+          <h2>功能總覽</h2>
+          <div class="avatar" style="background:#E6F1FB;color:#185FA5">A</div>
+        </div>
+        <div class="menu-grid" style="overflow-y:auto;flex:1">
+          <div class="menu-item" onclick="goto('health')">
+            <div class="menu-icon" style="background:#E6F1FB"><svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg></div>
+            <div class="menu-label">健康儀表板</div>
+            <div class="menu-sub">即時生理數據</div>
+          </div>
+          <div class="menu-item" onclick="goto('ai')">
+            <div class="menu-icon" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M15 5a3 3 0 0 1 3 3v1a2 2 0 0 1 0 4v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1a2 2 0 0 1 0-4V8a3 3 0 0 1 3-3h6z"/><path d="M9 14v-1"/><path d="M9 9v1"/><path d="M15 14v-1"/><path d="M15 9v1"/></svg></div>
+            <div class="menu-label">AI 預警系統</div>
+            <div class="menu-sub">異常偵測與建議</div>
+          </div>
+          <div class="menu-item" onclick="goto('meds')">
+            <div class="menu-icon" style="background:#EAF3DE"><svg viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M4.5 12.5l8-8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1-7-7"/><path d="M8.5 8.5l7 7"/></svg></div>
+            <div class="menu-label">用藥管理</div>
+            <div class="menu-sub">提醒 · 記錄 · 回診</div>
+          </div>
+          <div class="menu-item" onclick="goto('beauty')">
+            <div class="menu-icon" style="background:#FBEAF0"><svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="M8.12 8.12L12 12M8.12 15.88L20 4"/><path d="M20 20L12 12"/></svg></div>
+            <div class="menu-label">美容管理</div>
+            <div class="menu-sub">週期提醒 · 預約</div>
+          </div>
+          <div class="menu-item" onclick="goto('gps')">
+            <div class="menu-icon" style="background:#E1F5EE"><svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+            <div class="menu-label">防走失定位</div>
+            <div class="menu-sub">GPS · 虛擬圍籬</div>
+          </div>
+          <div class="menu-item" onclick="goto('nutrition')">
+            <div class="menu-icon" style="background:#FAEEDA"><svg viewBox="0 0 24 24" fill="none" stroke="#854F0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M4 11h16"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M10 6.5C10 5.12 10.9 4 12 4s2 1.12 2 2.5"/></svg></div>
+            <div class="menu-label">客製化飲食</div>
+            <div class="menu-sub">AI 配方 · 訂閱</div>
+          </div>
+          <div class="menu-item" onclick="goto('remote')">
+            <div class="menu-icon" style="background:#E6F1FB"><svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M15 10l4.553-2.276A1 1 0 0 1 21 8.723v6.554a1 1 0 0 1-1.447.894L15 14"/><rect x="3" y="8" width="12" height="8" rx="2"/></svg></div>
+            <div class="menu-label">遠端互動</div>
+            <div class="menu-sub">攝影機 · 語音</div>
+          </div>
+          <div class="menu-item" onclick="goto('community')">
+            <div class="menu-icon" style="background:#EEEDFE"><svg viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+            <div class="menu-label">飼主社群</div>
+            <div class="menu-sub">互助 · 協尋</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn" onclick="goto('home')"><i class="ti ti-home"></i><span>首頁</span></button>
+          <button class="tab-btn active" onclick="goto('menu')"><i class="ti ti-apps"></i><span>功能</span></button>
+          <button class="tab-btn" onclick="goto('gps')"><i class="ti ti-map-pin"></i><span>定位</span></button>
+          <button class="tab-btn" onclick="goto('community')"><i class="ti ti-users"></i><span>社群</span></button>
+        </div>
+      </div>
+
+      <!-- ========== HEALTH ========== -->
+      <div class="page" id="page-health">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>健康儀表板</h2>
+          <span class="pill blue">即時</span>
+        </div>
+        <div class="scroll-area">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-heart"></i> 心跳趨勢（今日）</div>
+            <div style="position:relative;height:80px">
+              <svg width="100%" height="80" viewBox="0 0 290 80" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#185FA5" stop-opacity="0.15"/>
+                    <stop offset="100%" stop-color="#185FA5" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <polygon points="0,50 30,48 60,45 90,50 120,42 150,38 160,60 170,35 190,46 220,44 250,40 290,43 290,80 0,80" fill="url(#hg)"/>
+                <polyline points="0,50 30,48 60,45 90,50 120,42 150,38 160,60 170,35 190,46 220,44 250,40 290,43"
+                  fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div style="position:absolute;bottom:4px;right:0;font-size:11px;color:#888">均值 82 bpm</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-run"></i> 本週活動量</div>
+            <div class="chart-bars" id="activityBars"></div>
+            <div class="chart-labels">
+              <span class="chart-label">一</span><span class="chart-label">二</span>
+              <span class="chart-label">三</span><span class="chart-label">四</span>
+              <span class="chart-label">五</span><span class="chart-label">六</span>
+              <span class="chart-label" style="color:#1D9E75;font-weight:500">日</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-moon"></i> 睡眠品質</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="flex:1">
+                <div style="font-size:22px;font-weight:700;color:#534AB7">9.2 <span style="font-size:13px;color:#888;font-weight:400">小時</span></div>
+                <div style="font-size:11px;color:#888;margin-top:2px">深層睡眠 4.1h · 淺眠 5.1h</div>
+              </div>
+              <span class="pill green">正常</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-temperature"></i> 體溫監測</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="flex:1">
+                <div style="font-size:22px;font-weight:700;color:#185FA5">38.4 <span style="font-size:13px;color:#888;font-weight:400">°C</span></div>
+                <div style="font-size:11px;color:#888;margin-top:2px">正常範圍：38.0 – 39.2°C</div>
+              </div>
+              <span class="pill green">正常</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== AI ========== -->
+      <div class="page" id="page-ai">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>AI 預警系統</h2>
+          <i class="ti ti-brain" style="color:#534AB7;font-size:20px"></i>
+        </div>
+        <div class="scroll-area">
+          <div class="card" style="border:1px solid #F7C1C1">
+            <div class="card-title" style="color:#A32D2D"><i class="ti ti-alert-triangle"></i> 本週異常紀錄</div>
+            <div class="alert-item">
+              <div class="alert-dot red"></div>
+              <div class="alert-text">活動量連續 3 天下降 22%，建議觀察飲食或諮詢獸醫</div>
+              <div class="alert-time">週一</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot amber"></div>
+              <div class="alert-text">夜間靜止心跳偏高（92 bpm），輕度異常</div>
+              <div class="alert-time">週三</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-sparkles"></i> AI 健康建議</div>
+            <div style="font-size:13px;color:#1a1a1a;line-height:1.6">
+              根據柴柴近 30 天數據分析：
+              <span class="ai-advice-item">⚡ 活動量趨勢略降，建議增加每日散步時長至 40 分鐘</span>
+              <span class="ai-advice-item">💧 飲水量偏低，可嘗試更換飲水盆位置</span>
+              <span class="ai-advice-item highlight">✓ 心律整齊，心臟功能指標正常</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-calendar"></i> 建議回診時間</div>
+            <div style="font-size:13px;color:#1a1a1a;margin-bottom:8px">依健康數據推估：<strong style="color:#185FA5">建議 6/15 心臟追蹤回診</strong>（13 天後）</div>
+            <button class="btn-primary" onclick="showToast('✅ 已加入行事曆！6/15 心臟追蹤回診')">
+              <i class="ti ti-calendar" style="margin-right:4px"></i> 加入行事曆
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== MEDS ========== -->
+      <div class="page" id="page-meds">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>用藥管理</h2>
+          <i class="ti ti-plus" style="color:#185FA5;font-size:20px;cursor:pointer" onclick="showToast('➕ 新增用藥功能開啟')"></i>
+        </div>
+        <div class="scroll-area">
+          <div class="section-header">今日用藥 <span class="pill amber">1 待服</span></div>
+          <div class="card">
+            <div class="med-item">
+              <div class="med-icon" style="background:#EAF3DE"><i class="ti ti-pill" style="color:#3B6D11;font-size:18px"></i></div>
+              <div style="flex:1">
+                <div class="med-name">關節保健錠</div>
+                <div class="med-detail">早餐後 · 1 顆 · 每日一次</div>
+              </div>
+              <div class="check-btn" id="med1" onclick="toggleMed('med1')"><i class="ti ti-check"></i></div>
+            </div>
+            <div class="med-item">
+              <div class="med-icon" style="background:#E6F1FB"><i class="ti ti-drop" style="color:#185FA5;font-size:18px"></i></div>
+              <div style="flex:1">
+                <div class="med-name">心臟藥（皮莫本丹）</div>
+                <div class="med-detail">早晚各一次 · 0.5 顆</div>
+              </div>
+              <div class="check-btn done" id="med2" onclick="toggleMed('med2')"><i class="ti ti-check"></i></div>
+            </div>
+            <div class="med-item">
+              <div class="med-icon" style="background:#FAEEDA"><i class="ti ti-droplet" style="color:#854F0B;font-size:18px"></i></div>
+              <div style="flex:1">
+                <div class="med-name">心絲蟲預防藥</div>
+                <div class="med-detail">每月一次 · 本月已服用</div>
+              </div>
+              <div class="check-btn done" id="med3" onclick="toggleMed('med3')"><i class="ti ti-check"></i></div>
+            </div>
+          </div>
+          <div class="section-header" style="margin-top:4px">回診紀錄</div>
+          <div class="card">
+            <div class="timeline-item">
+              <div class="tl-dot" style="background:#EAF3DE"><i class="ti ti-stethoscope" style="color:#3B6D11;font-size:13px"></i></div>
+              <div class="tl-content">
+                <div class="tl-title">心臟超音波追蹤</div>
+                <div class="tl-sub">台大動物醫院 · 心臟科</div>
+              </div>
+              <div class="tl-date">5/20</div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot" style="background:#E6F1FB"><i class="ti ti-vaccine" style="color:#185FA5;font-size:13px"></i></div>
+              <div class="tl-content">
+                <div class="tl-title">年度疫苗接種</div>
+                <div class="tl-sub">社區動物醫院</div>
+              </div>
+              <div class="tl-date">4/03</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== BEAUTY ========== -->
+      <div class="page" id="page-beauty">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>智慧美容管理</h2>
+          <i class="ti ti-scissors" style="color:#993556;font-size:20px"></i>
+        </div>
+        <div class="scroll-area">
+          <div class="notify-banner" style="background:#FBEAF0;border-color:#F4C0D1">
+            <i class="ti ti-alert-circle" style="color:#993556"></i>
+            <div class="notify-text" style="color:#72243E">距上次洗澡已 <strong>38 天</strong>，建議近期安排美容</div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-list-check"></i> 美容週期追蹤</div>
+            <div class="beauty-item">
+              <div class="beauty-icon" style="background:#E6F1FB"><i class="ti ti-droplets" style="color:#185FA5"></i></div>
+              <div style="flex:1">
+                <div class="beauty-name">洗澡</div>
+                <div class="beauty-due">上次：4/26 · 建議週期 4 週</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:95%;background:#E24B4A"></div></div>
+              </div>
+              <span class="pill red">過期</span>
+            </div>
+            <div class="beauty-item">
+              <div class="beauty-icon" style="background:#EEEDFE"><i class="ti ti-cut" style="color:#534AB7"></i></div>
+              <div style="flex:1">
+                <div class="beauty-name">修毛</div>
+                <div class="beauty-due">上次：4/10 · 建議週期 8 週</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:60%;background:#EF9F27"></div></div>
+              </div>
+              <span class="pill amber">快到</span>
+            </div>
+            <div class="beauty-item">
+              <div class="beauty-icon" style="background:#EAF3DE"><i class="ti ti-scissors" style="color:#3B6D11"></i></div>
+              <div style="flex:1">
+                <div class="beauty-name">剪指甲</div>
+                <div class="beauty-due">上次：5/15 · 建議週期 3 週</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:35%;background:#639922"></div></div>
+              </div>
+              <span class="pill green">正常</span>
+            </div>
+            <div class="beauty-item">
+              <div class="beauty-icon" style="background:#FAEEDA"><i class="ti ti-ear" style="color:#854F0B"></i></div>
+              <div style="flex:1">
+                <div class="beauty-name">清耳朵</div>
+                <div class="beauty-due">上次：5/10 · 建議週期 2 週</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:78%;background:#E24B4A"></div></div>
+              </div>
+              <span class="pill red">待處理</span>
+            </div>
+            <div class="beauty-item">
+              <div class="beauty-icon" style="background:#E1F5EE"><i class="ti ti-heart" style="color:#0F6E56"></i></div>
+              <div style="flex:1">
+                <div class="beauty-name">擠肛門腺</div>
+                <div class="beauty-due">上次：5/20 · 建議週期 4 週</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:20%;background:#639922"></div></div>
+              </div>
+              <span class="pill green">正常</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-map-pin"></i> 附近合作美容院</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #f5f5f5">
+              <div>
+                <div style="font-size:13px;font-weight:500">毛孩美容屋</div>
+                <div style="font-size:11px;color:#888">0.3 km · ⭐ 4.8（132 則）</div>
+              </div>
+              <button class="btn-outline" style="padding:6px 12px" onclick="showToast('✅ 預約成功！\n毛孩美容屋 6/3 下午 2:00')">預約</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+              <div>
+                <div style="font-size:13px;font-weight:500">寵物沙龍 SPA</div>
+                <div style="font-size:11px;color:#888">0.7 km · ⭐ 4.6（89 則）</div>
+              </div>
+              <button class="btn-outline" style="padding:6px 12px" onclick="showToast('✅ 預約成功！\n寵物沙龍 SPA 6/4 上午 10:00')">預約</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== GPS ========== -->
+      <div class="page" id="page-gps">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>防走失定位</h2>
+          <span class="pill green">在家</span>
+        </div>
+        <div class="scroll-area">
+          <div class="gps-map">
+            <svg class="bg" viewBox="0 0 340 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="340" height="140" fill="#c8dcc8"/>
+              <rect x="30" y="15" width="90" height="50" rx="4" fill="#b0c8b0"/>
+              <rect x="155" y="8" width="70" height="55" rx="4" fill="#b0c8b0"/>
+              <rect x="260" y="20" width="65" height="45" rx="4" fill="#b0c8b0"/>
+              <rect x="10" y="78" width="110" height="55" rx="4" fill="#b0c8b0"/>
+              <rect x="200" y="68" width="130" height="68" rx="4" fill="#b0c8b0"/>
+              <rect x="118" y="0" width="10" height="140" fill="#ddd8b0" opacity="0.7"/>
+              <rect x="0" y="63" width="340" height="10" fill="#ddd8b0" opacity="0.7"/>
+            </svg>
+            <div class="fence-ring"></div>
+            <div class="gps-marker">
+              <div class="gps-pulse"></div>
+              <div class="gps-label">柴柴</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-home"></i> 虛擬圍籬 — 家</div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:13px;color:#1a1a1a">範圍半徑：<strong>200 公尺</strong></div>
+                <div style="font-size:11px;color:#888;margin-top:2px">最後更新：2 分鐘前</div>
+              </div>
+              <span class="pill green">在範圍內</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-route"></i> 今日散步紀錄</div>
+            <div style="display:flex;gap:16px">
+              <div>
+                <div style="font-size:20px;font-weight:700;color:#185FA5">2.3 <span style="font-size:12px;color:#888;font-weight:400">km</span></div>
+                <div style="font-size:11px;color:#888">散步距離</div>
+              </div>
+              <div>
+                <div style="font-size:20px;font-weight:700;color:#1D9E75">35 <span style="font-size:12px;color:#888;font-weight:400">分</span></div>
+                <div style="font-size:11px;color:#888">外出時長</div>
+              </div>
+              <div>
+                <div style="font-size:20px;font-weight:700;color:#534AB7">6,240 <span style="font-size:12px;color:#888;font-weight:400">步</span></div>
+                <div style="font-size:11px;color:#888">步數</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="border:1px solid #F7C1C1">
+            <div class="card-title" style="color:#A32D2D"><i class="ti ti-alert-triangle"></i> 緊急協尋模式</div>
+            <div style="font-size:12px;color:#888;margin-bottom:8px">若發現寵物走失，一鍵向附近 3km 使用者廣播協尋資訊</div>
+            <button class="btn-primary" style="background:#A32D2D"
+              onclick="showToast('🚨 協尋廣播已發送！\n\n已通知附近 3 公里內 127 位用戶\n柴柴的照片與特徵已自動帶入\n請保持手機暢通，等待回報')">
+              <i class="ti ti-broadcast" style="margin-right:4px"></i> 一鍵發送協尋廣播
+            </button>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn" onclick="goto('home')"><i class="ti ti-home"></i><span>首頁</span></button>
+          <button class="tab-btn" onclick="goto('menu')"><i class="ti ti-apps"></i><span>功能</span></button>
+          <button class="tab-btn active" onclick="goto('gps')"><i class="ti ti-map-pin"></i><span>定位</span></button>
+          <button class="tab-btn" onclick="goto('community')"><i class="ti ti-users"></i><span>社群</span></button>
+        </div>
+      </div>
+
+      <!-- ========== NUTRITION ========== -->
+      <div class="page" id="page-nutrition">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>客製化飲食</h2>
+          <i class="ti ti-bowl" style="color:#854F0B;font-size:20px"></i>
+        </div>
+        <div class="scroll-area">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-sparkles"></i> 本月配方</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div>
+                <div style="font-size:15px;font-weight:500">柴柴專屬配方 #7</div>
+                <div style="font-size:11px;color:#888">AI 推薦 · 獸醫審核 ✓</div>
+              </div>
+              <span class="pill green">訂閱中</span>
+            </div>
+            <div class="stat-row">
+              <div class="stat-card"><div class="lbl">蛋白質</div><div class="val">28<span class="unit">%</span></div></div>
+              <div class="stat-card"><div class="lbl">脂肪</div><div class="val">14<span class="unit">%</span></div></div>
+              <div class="stat-card"><div class="lbl">每日份量</div><div class="val">180<span class="unit">g</span></div></div>
+              <div class="stat-card"><div class="lbl">熱量</div><div class="val">420<span class="unit">kcal</span></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-truck"></i> 訂閱配送狀態</div>
+            <div class="timeline-item">
+              <div class="tl-dot" style="background:#EAF3DE"><i class="ti ti-check" style="color:#3B6D11;font-size:12px"></i></div>
+              <div class="tl-content">
+                <div class="tl-title">本月配方已出貨</div>
+                <div class="tl-sub">預計 6/4 送達</div>
+              </div>
+              <div class="tl-date">6/2</div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot" style="background:#E6F1FB"><i class="ti ti-package" style="color:#185FA5;font-size:12px"></i></div>
+              <div class="tl-content">
+                <div class="tl-title">上月配方已簽收</div>
+                <div class="tl-sub">食用狀況：良好</div>
+              </div>
+              <div class="tl-date">5/4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== REMOTE ========== -->
+      <div class="page" id="page-remote">
+        <div class="topbar">
+          <span class="back-btn" onclick="goto('menu')"><i class="ti ti-arrow-left"></i></span>
+          <h2>遠端互動</h2>
+          <span class="pill green">線上</span>
+        </div>
+        <div class="scroll-area">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-video"></i> 家中攝影機</div>
+            <div class="camera-view">
+              <i class="ti ti-camera"></i>
+              <div class="cam-label">客廳攝影機 · 即時串流</div>
+              <span class="pill green" style="font-size:11px">● 直播中</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-primary" style="flex:1;margin:0"
+                onclick="showToast('📞 語音通話已開啟\n柴柴聽到你的聲音了！')">
+                <i class="ti ti-microphone" style="margin-right:4px"></i> 語音通話
+              </button>
+              <button class="btn-outline" style="flex:1"
+                onclick="showToast('📸 截圖已儲存至健康紀錄')">
+                <i class="ti ti-camera" style="margin-right:4px"></i> 截圖
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-mood-happy"></i> 當前狀態</div>
+            <div style="font-size:13px;color:#1a1a1a;line-height:1.6">
+              柴柴目前正在 <strong>休息</strong>，活動量指數 <strong style="color:#1D9E75">低（正常）</strong>。<br>
+              <span style="font-size:12px;color:#888">距上次活躍：約 42 分鐘前</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== COMMUNITY ========== -->
+      <div class="page" id="page-community">
+        <div class="topbar">
+          <h2>飼主社群</h2>
+          <span style="font-size:13px;color:#185FA5;cursor:pointer;font-weight:500"
+            onclick="showToast('✏️ 發文功能開啟')">+ 發文</span>
+        </div>
+        <div class="scroll-area">
+          <div class="lost-alert">
+            <div class="lost-title"><i class="ti ti-alert-triangle" style="font-size:16px"></i> 附近協尋廣播</div>
+            <div class="lost-body">台北市大安區｜黑色拉布拉多「旺財」，昨晚 9 點走失，項圈最後位置：仁愛路三段。如有目擊請聯繫！</div>
+            <button class="btn-primary" style="background:#A32D2D;margin-top:8px;font-size:12px"
+              onclick="showToast('📍 感謝回報！\n已通知飼主您的目擊資訊\n後續會有專人聯絡您')">
+              <i class="ti ti-phone" style="margin-right:4px"></i> 我看到了，聯繫飼主
+            </button>
+          </div>
+          <div class="community-post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:#E6F1FB;color:#185FA5">蘇</div>
+              <div>
+                <div class="post-user">Suzy</div>
+                <div class="post-area">大安區 · 貓奴</div>
+              </div>
+              <span class="pill green" style="margin-left:auto">健康討論</span>
+            </div>
+            <div class="post-text">請問有人的貓也在用皮莫本丹嗎？我家黑豬最近吃藥後好像比較沒精神，APP 的數據顯示心跳下降了一些，這樣正常嗎？</div>
+            <div class="post-actions">
+              <div class="post-action" id="like1" onclick="likePost('like1', 13)"><i class="ti ti-heart"></i> 13</div>
+              <div class="post-action"><i class="ti ti-message-circle"></i> 6 回覆</div>
+              <div class="post-action"><i class="ti ti-share"></i> 分享</div>
+            </div>
+          </div>
+          <div class="community-post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:#EAF3DE;color:#3B6D11">林</div>
+              <div>
+                <div class="post-user">林威志</div>
+                <div class="post-area">信義區 · 柴犬飼主</div>
+              </div>
+              <span class="pill blue" style="margin-left:auto">美容推薦</span>
+            </div>
+            <div class="post-text">推薦信義區的「毛孩美容屋」！幫柴柴洗了全套，師傅很有耐心，APP 裡面可以直接線上預約超方便！</div>
+            <div class="post-actions">
+              <div class="post-action" id="like2" onclick="likePost('like2', 28)"><i class="ti ti-heart"></i> 28</div>
+              <div class="post-action"><i class="ti ti-message-circle"></i> 4 回覆</div>
+              <div class="post-action"><i class="ti ti-share"></i> 分享</div>
+            </div>
+          </div>
+          <div class="community-post">
+            <div class="post-header">
+              <div class="post-avatar" style="background:#EEEDFE;color:#534AB7">曾</div>
+              <div>
+                <div class="post-user">曾丞傑</div>
+                <div class="post-area">中山區 · 短毛貓飼主</div>
+              </div>
+              <span class="pill purple" style="margin-left:auto">行為討論</span>
+            </div>
+            <div class="post-text">分離焦慮的貓用 APP 語音遠端安撫真的有效！從數據看到麻吉聽到我的聲音後心跳從 98 降到 85，科學實證超感動🥹</div>
+            <div class="post-actions">
+              <div class="post-action" id="like3" onclick="likePost('like3', 45)"><i class="ti ti-heart"></i> 45</div>
+              <div class="post-action"><i class="ti ti-message-circle"></i> 11 回覆</div>
+              <div class="post-action"><i class="ti ti-share"></i> 分享</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn" onclick="goto('home')"><i class="ti ti-home"></i><span>首頁</span></button>
+          <button class="tab-btn" onclick="goto('menu')"><i class="ti ti-apps"></i><span>功能</span></button>
+          <button class="tab-btn" onclick="goto('gps')"><i class="ti ti-map-pin"></i><span>定位</span></button>
+          <button class="tab-btn active" onclick="goto('community')"><i class="ti ti-users"></i><span>社群</span></button>
+        </div>
+      </div>
+
+    </div><!-- /screen -->
+  </div><!-- /phone -->
+</div><!-- /phone-wrap -->
+
+<!-- Toast -->
+<div id="toast" style="
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 12px;
+  font-size: 13px; line-height: 1.5; text-align: center; white-space: pre-line;
+  transition: transform 0.25s ease, opacity 0.25s ease; opacity: 0;
+  max-width: 300px; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+"></div>
+
+<div style="margin-top: 20px; text-align:center; font-size: 12px; color: #999;">
+  互動展示原型 · 行動商務應用 期末報告
+</div>
+
+<script>
+const barData = [35, 42, 38, 55, 48, 28, 62];
+const barColors = ['#185FA5','#185FA5','#185FA5','#185FA5','#185FA5','#185FA5','#1D9E75'];
+
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('activityBars');
+  if (container) {
+    barData.forEach((h, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar';
+      bar.style.height = h + 'px';
+      bar.style.background = barColors[i];
+      bar.style.opacity = i === 6 ? '1' : (0.4 + i * 0.08).toFixed(2);
+      container.appendChild(bar);
+    });
+  }
+});
+
+function goto(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + id);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const map = { home: 0, menu: 1, gps: 2, community: 3 };
+  const pages = document.querySelectorAll('.page.active .tab-btn');
+  const allTabs = document.querySelectorAll('#page-' + id + ' .tab-btn');
+  if (id in map) {
+    allTabs.forEach((btn, i) => {
+      if (i === map[id]) btn.classList.add('active');
+    });
+  }
+}
+
+function toggleMed(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('done');
+  showToast(el.classList.contains('done') ? '✅ 已標記服藥完成！' : '↩️ 已取消服藥記錄');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    t.style.transform = 'translateX(-50%) translateY(80px)';
+    t.style.opacity = '0';
+  }, 2800);
+}
+
+const liked = {};
+function likePost(id, base) {
+  const el = document.getElementById(id);
+  liked[id] = !liked[id];
+  const count = liked[id] ? base + 1 : base;
+  const color = liked[id] ? '#E24B4A' : '';
+  el.innerHTML = `<i class="ti ti-heart" style="color:${color}"></i> ${count}`;
+}
+</script>
+</body>
+</html>
